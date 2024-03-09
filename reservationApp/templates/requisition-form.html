@@ -1,0 +1,68 @@
+{% extends 'base.html' %}{% load static %}{% block pageContent %}
+<style>
+    main {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+    }
+</style>
+<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+        <div class="card card-default rounded-0 shadow">
+            <div class="card-header">
+                <h4 class="card-title"><b>Create Requisition</b></h4>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <form id="register-user" method="POST" action="{% url 'register-user' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mdc-layout-grid">
+                            <div class="mdc-layout-grid__inner">
+                                <div class="form-group mb-3">
+                                    <label for="date" class="control-label">Date</label>
+                                    <input type="text" class="form-control rounded-0" name="date" id="date" value="{{ reg_form.data.date }}" required="required">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="reg_form.data.requested_by" class="control-label">Requested By</label>
+                                    <input type="text" class="form-control rounded-0" name="reg_form.data.requested_by" id="reg_form.data.requested_by" value="{{ reg_form.data.reg_form.data.requested_by }}" required="required">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="faculty" class="control-label">Faculty</label>
+                                    <input type="faculty" class="form-control rounded-0" name="faculty" id="faculty" value="{{ reg_form.data.faculty }}" required="required">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="purpose_of_trip" class="control-label">Purpose of Trip</label>
+                                    <input type="text" class="form-control rounded-0" name="purpose_of_trip" id="purpose_of_trip" value="{{ reg_form.data.purpose_of_trip }}" required="required">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="departure_and_return_date_and_time" class="control-label">Departure & Return Date and Time</label>
+                                    <input type="departure_and_return_date_and_time" class="form-control rounded-0" name="departure_and_return_date_and_time" id="departure_and_return_date_and_time" value="{{ reg_form.data.departure_and_return_date_and_time }}" required="required">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="number_of_passengers" class="control-label">Number of Passengers</label>
+                                    <input type="departure_and_return_date_and_time" class="form-control rounded-0" name="number_of_passengers" id="number_of_passengers" value="{{ reg_form.data.number_of_passengers }}" required="required">
+                                </div>
+                                {% for field in reg_form %} {% for error in field.errors %}
+                                <div class="alert alert-danger my-2">
+                                    <p>{{ error }}</p>
+                                </div>
+                                {% endfor %} {% endfor %}
+                                <div class="form-group mb-3">
+                                    <div class="d-flex w-100 justify-content-end">
+                                        <button class="btn btn-sm rounded-0 btn-primary col-4">
+                                                Submit
+                                            </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock pageContent %}
