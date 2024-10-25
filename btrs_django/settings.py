@@ -135,4 +135,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER ='shyamsaikat99@gmail.com' #'2Step Verification koira mail dibi jeida dia mail jaibe' #2Step Verification koira mail dibi jeida dia mail jaibe
+EMAIL_HOST_PASSWORD = 'bmyf mugd upir nlzx'#'Then accounts e jabi upre search dibi app password leikha new app passworrd generate koira dibi ei field e 16 chars er pw hoi mainly'
+#Then accounts e jabi upre search dibi app password leikha new app passworrd generate koira dibi ei field e 16 chars er pw hoi mainly
 ID_ENCRYPTION_KEY = b'UdhnfelTxqj3q6BbPe7H86sfQnboSBzb0irm2atoFUw='
+DEFAULT_FROM_EMAIL = 'shyamsaikat99@gmail.com'

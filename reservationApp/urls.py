@@ -5,6 +5,11 @@ from . import views
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from .views import create_requisition
+from django.urls import path
+from .views import payment_success
+from .views import send_requisition_email
+
+
 
 urlpatterns = [
     path('redirect-admin', RedirectView.as_view(url="/admin"),name="redirect-admin"),
@@ -47,6 +52,20 @@ urlpatterns = [
     path('find_trip',views.find_trip,name='find-trip-page'),
     path('requisition',views.requisition_on,name='requisition'),
     #path('requisition',views.create_requisition, name='create_requisition'),
-
+    path('payment/success/', views.payment_success, name='payment_success'),
+    path('payment/fail/', views.payment_fail, name='payment_fail'),
+    path('save_booking', views.payment_fail, name='initiate_payment'),
+    path('send-requisition-email/', send_requisition_email, name='send_requisition_email'),
+    path('requisitions/', views.requisition_list, name='requisition_list'),
+    path('requisition/accept/<int:pk>/', views.accept_requisition, name='accept_requisition'),
+    path('requisition/reject/<int:pk>/', views.reject_requisition, name='reject_requisition'),
+    path('save-requisition/', views.save_requisition, name='save-requisition'),
+    path('select-seat/', views.seat_selection_view, name='seat-selection'),
+    path('submit-seat-selection/', views.submit_seat_selection, name='submit-seat-selection'),
+    path('send-mail/', views.send_mail_view, name='send_mail'),
+    path('requisitions/delete/<int:id>/', views.delete_requisition, name='delete_requisition'),  # Add this line
 
 ]
+
+
+

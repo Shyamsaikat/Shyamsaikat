@@ -7,7 +7,7 @@ from btrs_django.settings import MEDIA_ROOT, MEDIA_URL
 import json
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from reservationApp.forms import UserRegistration, UpdateProfile, UpdatePasswords, SaveCategory, SaveLocation, SaveBus, SaveSchedule, SaveBooking, PayBooked
 from reservationApp.models import Booking, Category, Location, Bus, Schedule
 from cryptography.fernet import Fernet
@@ -15,6 +15,8 @@ from django.conf import settings
 import base64
 from datetime import datetime
 from django.db.models import Q
+from django.core.mail import send_mail
+from django.shortcuts import render
 
 context = {
     'page_title' : 'File Management System',
@@ -518,39 +520,307 @@ def requisition_on(request):
 
 from django.shortcuts import render
 
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from .models import Requisition  # Ensure Requisition model includes profession and email
+
+# Function to create a requisition
 def create_requisition(request):
     if request.method == 'POST':
         # Handle form submission
         date = request.POST.get('date')
         requested_by = request.POST.get('requested_by')
         faculty = request.POST.get('faculty')
+        profession = request.POST.get('profession')  # New field for profession
+        email = request.POST.get('email')  # New field for email
         purpose_of_trip = request.POST.get('purpose_of_trip')
+        location_from = request.POST.get('location_from')
+        location_to = request.POST.get('location_to')
         departure_date = request.POST.get('departure_date')
         return_date = request.POST.get('return_date')
         number_of_passengers = request.POST.get('number_of_passengers')
-        
-        # Save requisition details to database or perform any other necessary actions
-        # Example: 
-        # Requisition.objects.create(
-        #     date=date,
-        #     requested_by=requested_by,
-        #     faculty=faculty,
-        #     purpose_of_trip=purpose_of_trip,
-        #     departure_date=departure_date,
-        #     return_date=return_date,
-        #     number_of_passengers=number_of_passengers
-        # )
+
+        # Save requisition details to database
+        requisition = Requisition.objects.create(
+            date=date,
+            requested_by=requested_by,
+            faculty=faculty,
+            profession=profession,  # Save profession
+            email=email,            # Save email
+            location_from=location_from,
+            location_to=location_to,
+            purpose_of_trip=purpose_of_trip,
+            departure_date=departure_date,
+            return_date=return_date,
+            number_of_passengers=number_of_passengers
+        )
 
         # Render a template to display the requisition details
         return render(request, 'requisition_details.html', {
-            'date': date,
-            'requested_by': requested_by,
-            'faculty': faculty,
-            'purpose_of_trip': purpose_of_trip,
-            'departure_date': departure_date,
-            'return_date': return_date,
-            'number_of_passengers': number_of_passengers,
+            'requisition': requisition,  # Pass the requisition object to the template
         })
     else:
         # Render the form template
         return render(request, 'requisition.html')
+
+# Function to save requisition via AJAX
+@csrf_exempt  # only if you are using AJAX; otherwise, CSRF token is handled by Django form
+def save_requisition(request):
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        purpose_of_trip = request.POST.get('purpose_of_trip')
+        requested_by = request.POST.get('requested_by')
+        faculty = request.POST.get('faculty')
+        profession = request.POST.get('profession')  # New field for profession
+        email = request.POST.get('email')  # New field for email
+        location_from = request.POST.get('location_from')
+        location_to = request.POST.get('location_to')
+        departure_date = request.POST.get('departure_date')
+        return_date = request.POST.get('return_date')
+        number_of_passengers = request.POST.get('number_of_passengers')
+
+        # Save the data to the database
+        requisition = Requisition.objects.create(
+            date=date,
+            purpose_of_trip=purpose_of_trip,
+            requested_by=requested_by,
+            faculty=faculty,
+            profession=profession,  # Save profession
+            email=email,            # Save email
+            location_from=location_from,
+            location_to=location_to,
+            departure_date=departure_date,
+            return_date=return_date,
+            number_of_passengers=number_of_passengers
+        )
+        requisition.save()
+
+        return JsonResponse({"message": "Requisition saved successfully!"})
+
+from django.core.mail import send_mail
+from django.http import JsonResponse
+
+def send_requisition_email(request):
+    if request.method == 'POST':
+        try:
+            data = request.POST
+            fixed_email = 'shyamsaikat16@cse.pstu.ac.bd'  # Set your fixed email address here
+            
+            subject = f"Requisition Details - {data.get('requested_by', 'Unknown')}"
+            message = (
+                f"Date: {data.get('date', 'N/A')}\n"
+                f"Requested By: {data.get('requested_by', 'N/A')}\n"
+                f"Faculty: {data.get('faculty', 'N/A')}\n"
+                f"Profession: {data.get('profession', 'N/A')}\n"
+                f"Email: {data.get('email', 'N/A')}\n"
+                f"Location From: {data.get('location_from', 'N/A')}\n"
+                f"Location To: {data.get('location_to', 'N/A')}\n"
+                f"Purpose of Trip: {data.get('purpose_of_trip', 'N/A')}\n"
+                f"Departure Date: {data.get('departure_date', 'N/A')}\n"
+                f"Return Date: {data.get('return_date', 'N/A')}\n"
+                f"Number of Passengers: {data.get('number_of_passengers', 'N/A')}\n"
+            )
+            
+            recipient_list = [fixed_email]  # Use the fixed recipient email
+            
+            # Send the email
+            send_mail(
+                subject,
+                message,
+                None,  # Default sender (or you can specify one if required)
+                recipient_list,
+                fail_silently=False
+            )
+            
+            # Return success response
+            return JsonResponse({'message': 'Email sent successfully.'}, status=200)
+
+        except Exception as e:
+            # Log the error and return a failure response
+            print(f"Error sending email: {e}")
+            return JsonResponse({'error': 'Failed to send email. Please try again.'}, status=500)
+
+
+from django.shortcuts import redirect
+import requests
+from django.urls import reverse
+def initiate_payment(request):
+    # Process form submission and get necessary data
+    amount = request.POST.get('amount')
+    order_id = request.POST.get('order_id')
+    # Get other necessary data
+
+    # Make a POST request to SSLCommerz API
+    sslcommerz_data = {
+        'store_id': 'pstut6601ab84d15f7',
+        'store_password': 'pstut6601ab84d15f7@ssl',
+        'currency': 'BDT',  # or any other currency
+        'total_amount': amount,
+        'tran_id': order_id,
+        'success_url': request.build_absolute_uri(reverse('payment_success')),  # Dynamic success URL
+        'fail_url': request.build_absolute_uri(reverse('payment_fail')),  # Dynamic fail URL
+        'cancel_url': 'YOUR_CANCEL_URL',  # Redirect URL after canceled payment
+        # Add other necessary data
+    }
+
+    # Send the request to SSLCommerz API
+    response = requests.post('https://sandbox.sslcommerz.com/manage/', data=sslcommerz_data)
+
+    # Assuming SSLCommerz returns a redirect URL
+    redirect_url = response.json()['GatewayPageURL']
+
+    # Redirect the user to SSLCommerz payment gateway
+    return redirect(redirect_url)
+
+
+# views.py
+
+from django.shortcuts import render
+
+def payment_success(request):
+    return render(request, 'payment_success.html')
+
+def payment_fail(request):
+    return render(request, 'payment_fail.html')
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from .models import Requisition  # Ensure Requisition model includes profession and email
+from django.core.mail import send_mail  # Ensure this import is included
+
+def requisition_list(request):
+    requisitions = Requisition.objects.all()  # Fetch all requisition records
+    return render(request, 'requisition_list.html', {'requisitions': requisitions})
+
+def accept_requisition(request, pk):
+    requisition = get_object_or_404(Requisition, pk=pk)
+    requisition.status = 'accepted'  # Assuming you have a status field
+    requisition.save()
+    send_confirmation_email(requisition)  # Call a function to send email confirmation
+    return redirect('requisition_list')  # Redirect to the list page
+
+def reject_requisition(request, pk):
+    requisition = get_object_or_404(Requisition, pk=pk)
+    requisition.status = 'rejected'  # Assuming you have a status field
+    requisition.save()
+    send_rejection_email(requisition)  # Call a function to send email rejection
+    return redirect('requisition_list')  # Redirect to the list page
+
+def delete_requisition(request, id):
+    requisition = get_object_or_404(Requisition, id=id)
+    requisition.delete()
+    return redirect('requisition_list')  # Redirect to the list page after deletion
+
+# Optional: Functions to send confirmation and rejection emails
+def send_confirmation_email(requisition):
+    subject = f"Requisition {requisition.id} Accepted"
+    message = (
+        f"Your requisition has been accepted.\n"
+        f"Requested By: {requisition.requested_by}\n"
+        f"Profession: {requisition.profession}\n"
+        f"Email: {requisition.email}\n"
+        f"Purpose of Trip: {requisition.purpose_of_trip}\n"
+        f"Departure Date: {requisition.departure_date}\n"
+        f"Return Date: {requisition.return_date}\n"
+        f"Status: {requisition.status}\n"
+    )
+    recipient_list = [requisition.email]  # Use the requisition's email
+    send_mail(subject, message, None, recipient_list, fail_silently=False)
+
+def send_rejection_email(requisition):
+    subject = f"Requisition {requisition.id} Rejected"
+    message = (
+        f"Your requisition has been rejected.\n"
+        f"Requested By: {requisition.requested_by}\n"
+        f"Profession: {requisition.profession}\n"
+        f"Email: {requisition.email}\n"
+        f"Purpose of Trip: {requisition.purpose_of_trip}\n"
+        f"Departure Date: {requisition.departure_date}\n"
+        f"Return Date: {requisition.return_date}\n"
+        f"Status: {requisition.status}\n"
+    )
+    recipient_list = [requisition.email]  # Use the requisition's email
+    send_mail(subject, message, None, recipient_list, fail_silently=False)
+
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .models import Seat
+from .forms import SeatSelectionForm
+
+def seat_selection_view(request):
+    seats = Seat.objects.all()  # Fetch all seats and their statuses
+    context = {
+        'seats': seats
+    }
+    return render(request, 'seat_selection.html', context)
+
+def submit_seat_selection(request):
+    if request.method == 'POST':
+        seat_number = request.POST.get('selected_seat')
+        
+        # Get the selected seat from the database
+        try:
+            selected_seat = Seat.objects.get(seat_number=seat_number)
+        except Seat.DoesNotExist:
+            return HttpResponse("Seat does not exist", status=400)
+        
+        # Check if the seat is available
+        if selected_seat.status == 'available':
+            selected_seat.status = 'selected'
+            selected_seat.save()
+            return HttpResponse("Seat selection successful!")
+        else:
+            return HttpResponse("Seat is already reserved or selected", status=400)
+    
+    return redirect('seat-selection')
+from django.core.mail import send_mail
+from django.shortcuts import redirect
+from django.conf import settings
+from .models import Requisition  # Assuming you have a Requisition model
+
+from django.core.mail import send_mail
+from django.contrib import messages
+import logging
+
+logger = logging.getLogger(__name__)
+
+def send_mail_view(request):
+    if request.method == 'POST':
+        requisition_id = request.POST.get('requisition_id')
+        driver_name = request.POST.get('driver_name')
+        bus_number = request.POST.get('bus_number')
+        status = request.POST.get('status')
+        email = request.POST.get('email')
+
+        subject = f"Requisition {requisition_id} - {status}"
+        message = (
+            f"Requisition ID: {requisition_id}\n"
+            f"Driver Name: {driver_name}\n"
+            f"Bus Number: {bus_number}\n"
+            f"Status: {status}\n"
+        )
+
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+            messages.success(request, 'Email sent successfully!')
+        except Exception as e:
+            logger.error(f'Error sending email: {str(e)}')
+            messages.error(request, 'There was an error sending the email.')
+        
+        return redirect('requisition_list')
+
+def delete_requisition(request, id):
+    requisition = get_object_or_404(Requisition, id=id)
+    requisition.delete()
+    return redirect('requisition_list')  # Redirect to the requisition list after deletion
+
+
+

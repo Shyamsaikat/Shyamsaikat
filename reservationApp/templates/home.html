@@ -74,35 +74,204 @@
         </div>
     </div>
     {% else %}
-    <div class="card card-default rounded-0 shadow border border-dark">
-        <div class="card-body">
-            <div class="container-fluid">
-                <h2 class="text-center fw-bold">Welcome to PSTU Transport Section</h2>
-                <hr>
-                <p>
-                    Welcome to the Patuakhali Science and Technology University. It is one of the fast growing new public universities in Bangladesh.The Patuakhali Science and Technology University was developed at the private initiative of the local people
-                     through the establishment of a higher secondary institute in 1972 as a private college. It was then turned to Patuakhali Agricultural College under the affiliation of Bangladesh Agricultural University (BAU), Mymensingh in 1979 with the
-                      objective of producing agricultural graduates offering the BSc.Ag. (Hons.) degree.
-                    <br> The college was nationalized on 1 February 1985 and was placed under the administrative control of the Bangladesh Agricultural Research Institute (BARI), Ministry of Agricultural together with BAU affiliation. The university was
-                     inaugurated on 08 July 2000 by the then Honorable Prime Minister, Government of the Peoples Republic of Bangladesh, Her Excellency Sheikh Hasina and started its academic activities on 26 February 2002. The main campus of the PSTU is
-                      located at about 20 km north from the district town of Patuakhali and about 38 km south from the divisional city of Barishal. The outer campus is situated at Babuganj under Barishal district. Being the lone university in the southern
-                       region of the country, the PSTU was established primarily to facilitate easy access to quality higher education to a populace who had been deprived of this prime right for a very long time since the independence of our beloved country.
-                    <br>  Although situated in a remote area, the PSTU campus is surrounded by the traditional artistic radiant and vibrant green texture of Bangladesh. The interior of the campus is beautifully decorated with different types of natural wild
-                     plants, medicinal plants and fruit bearing trees including rows of coconut and mehegoni trees. There are number of lakes and ponds inside the campus which have enhanced its beauty many folds. Despite having comparatively small campus,
-                      along with the academic activities, the students of the university have ample opportunities to perform different sports and cultural activities. Although the development activities of the PSTU have been grossly overlooked for many years
-                       since its inception, however, we are gradually advancing towards our goal to attain the status of premier institution in teaching and research.
-                    <br> The challenges to our higher education system, particularly for a university are to curve out a path and a strategy to become an effective instrument in the process of progressive transformation of this country. In addition to producing
-                     graduates who are highly regarded in the job market, our focus is, therefore, also directed towards creating new knowledge and innovative minds. All the necessary steps are being made available at present to ensure appropriate environment
-                      for performing academic and research activities in a very harmonic situation. We are striving to instill the sense of right, interest, attitude, morale and intellect in our students so that they are equipped with the best knowledge, skills,
-                       competence and attitude that they can utilize for their individual betterment and the prosperity of the society in general.The PSTU has been offering undergraduate and postgraduate programmes in Agriculture, Computer Science & Engineering,
-                        Business Administration & Management, Animal Science, Veterinary Medicine, Fisheries, Disaster Management and Nutrition & Food Science. In order to fulfill the mission of the university, we are including the brightest students through 
-                        a highly competitive admission test.
-                    <br>The up-to-date and well-conformed syllabi have been tailored to the market needs and are designed to equip the students with latest development in their fields of specialization. Moreover, the academic programmes are adopted with commitment
-                     to provide and mentoring our students a global career by the updated curricula. We, therefore, present an environment for teaching, research and entrepreneurship development in various disciplines of the university. We believe our success lies
-                      in our passion for teaching and learning and our commitment to our students. Our challenge for the future is to build on this strong base to establish ourselves firmly among the leading universities. 
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Transport Section</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+        <style>
+            body {
+                background: rgba(0, 0, 0, 0.5);
+                background-image: url(../../media/uploads/ss.jpg);
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+    
+            .section-header {
+                padding: 3rem 0;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                text-align: center;
+            }
+    
+            .card {
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+    
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+    
+            .btn-black {
+                background-color: black;
+                color: white;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="container">
+            <!-- Transport Section Header -->
+            <div class="section-header text-center">
+                <h2 class="fw-bold">Transport Section</h2>
+                <p>Welcome to the Patuakhali Science and Technology University Transport Section</p>
+            </div>
+    
+            <!-- Bus Details -->
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-black">
+                    <h3>Total Buses <i class="fa fa-bus fa-2x text-info mx-1"></i> {{ products }}</h3>
+                    <hr class="my-2">
+                    <h3>Total Categories <i class="fa fa-list fa-2x text-info mx-1"></i> {{ categories }}</h3>
+                    <hr class="my-2">
+                    <h3>Total Upcoming Trips <i class="fa fa-file-invoice fa-2x text-info mx-1"></i> {{ upcoming_trip }}</h3>
+                    <hr class="my-2">
+                    <button type="button" class="btn btn-black" data-bs-toggle="modal" data-bs-target="#optionsModal">
+                        View Details
+                    </button>
+    
+                    <!-- Modal for Additional Options -->
+                    <div class="modal fade" id="optionsModal" tabindex="-1" aria-labelledby="optionsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="optionsModalLabel">Transport Options</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                            <i class="fa fa-phone fa-lg text-info me-2"></i> Contact Us
+                                        </li>
+                                        <li class="list-group-item" data-bs-toggle="modal" data-bs-target="#busTimeModal">
+                                            <i class="fa fa-clock fa-lg text-info me-2"></i> Regular Bus Time
+                                        </li>
+                                        <li class="list-group-item" data-bs-toggle="modal" data-bs-target="#busLocationModal">
+                                            <i class="fa fa-map-marker-alt fa-lg text-info me-2"></i> Bus Location
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    
+    </html>
+    
+    
+        <!-- Authorities Section Header -->
+        <div class="section-header text-center">
+            <h2 class="fw-bold">Authorities</h2>
+            <p>Meet our dedicated transport management team</p>
+        </div>
+    
+        <!-- Authorities Section -->
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="media/default/default-avatar.png" class="card-img-top" alt="Director">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Section Officer</h5>
+                            <p class="card-text">
+                                <strong>Name:</strong> Md. Saiful Islam <br>
+                                <strong>Phone:</strong> +880 1730 203 517 <br>
+                                <strong>Email:</strong> <a href="mailto:saiful@pstu.ac.bd">saiful@pstu.ac.bd</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="media/default/default-avatar.png" class="card-img-top" alt="Asst. Director">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Asst. Director</h5>
+                            <p class="card-text">
+                                <strong>Name:</strong> Md. Alim Uddin <br>
+                                <strong>Phone:</strong> +880 1711 434 612 <br>
+                                <strong>Email:</strong> <a href="mailto:alim.1987@pstu.ac.bd">alim.1987@pstu.ac.bd</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="media/default/default-avatar.png" class="card-img-top" alt="Office Assistant">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Office Assistant</h5>
+                            <p class="card-text">
+                                <strong>Name:</strong> Md. Hasibur Rahman <br>
+                                <strong>Phone:</strong> +880 1711 730 188 <br>
+                                <strong>Email:</strong> <a href="mailto:hasibur@pstu.ac.bd">hasibur@pstu.ac.bd</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Additional Options Section -->
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa fa-phone fa-2x text-info mb-2"></i></h5>
+                            <p class="card-text">Contact Us for inquiries and support.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa fa-bullhorn fa-2x text-info mb-2"></i></h5>
+                            <p class="card-text">Motto: Service with dedication and excellence.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa fa-cogs fa-2x text-info mb-2"></i></h5>
+                            <p class="card-text">Service: Providing timely and safe transportation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa fa-comment-dots fa-2x text-info mb-2"></i></h5>
+                            <p class="card-text">Complaint Box: Your feedback matters to us.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    
+        
+                  
     {% endif %}
 </section>
 

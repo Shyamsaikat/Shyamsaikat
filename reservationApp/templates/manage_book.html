@@ -1,87 +1,266 @@
 {% load customfilter %}
 {% load humanize %}
-<div class="container-fluid">
-    <form action=" " id="book-form">
-        {% csrf_token %}
-        <input type="hidden" name="id" value="{{ book.id }}">
-        <input type="hidden" name="code" value="1">
-        <input type="hidden" name="schedule" value="{{ schedule.id }}">
-        <div class="form-group mb-3">
-            <label for="name" class="control-label">Full Name</label>
-            <input class="form-control rounded-0" name="name" id="name" type="text" value="{{ book.name }}" required>
+<div class="container my-5">
+    <div class="card shadow border-0 rounded">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Payment Form</h4>
         </div>
-        <div class="form-group mb-3">
-            <label for="seats" class="control-label">Number of Seats</label>
-            <input class="form-control rounded-0" name="seats" id="seats" max="{{ schedule.count_available|floatformat:0 }}" type="number" value="{{ book.seats }}" required>
+        <div class="card-body p-4">
+            <form action="" id="book-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ book.id }}">
+                <input type="hidden" name="code" value="1">
+                <input type="hidden" name="schedule" value="{{ schedule.id }}">
+
+                <!-- Full Name Field -->
+                <div class="form-group mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control rounded" name="name" id="name" value="{{ book.name }}" required>
+                    <div class="invalid-feedback">Please provide your name.</div>
+                </div>
+
+                <!-- Number of Seats Field -->
+                <div class="form-group mb-3">
+                    <label for="seats" class="form-label">Number of Seats</label>
+                    <input type="number" class="form-control rounded" name="seats" id="seats" max="{{ schedule.count_available|floatformat:0 }}" value="{{ book.seats }}" required>
+                    <small class="text-muted">Available seats: {{ schedule.count_available|floatformat:0 }}</small>
+                    <div class="invalid-feedback">Please select the number of seats.</div>
+                </div>
+
+                <!-- Fare Field (Disabled) -->
+                <div class="form-group mb-3">
+                    <label for="fare" class="form-label">Fare per Seat</label>
+                    <input type="text" class="form-control rounded text-end" id="fare" value="{{ schedule.fare|intcomma }}" disabled>
+                </div>
+
+                <!-- Payable Amount Field (Disabled) -->
+                <div class="form-group mb-4">
+                    <label for="payable" class="form-label">Total Payable Amount</label>
+                    <input type="text" class="form-control rounded text-end" id="payable" value="{% if book.total_payable %}{{ book.total_payable }}{% else %}0.00{% endif %}" disabled>
+                </div>
+
+                <!-- Payment and Print Buttons -->
+                <div class="d-flex justify-content-between">
+                    <button type="button" id="payment-button" class="btn btn-success">Pay Now <i class="fa fa-credit-card ms-2"></i></button>
+                    <button type="button" id="print-button" class="btn btn-secondary">Print <i class="fa fa-print ms-2"></i></button>
+                </div>
+                <div class="mt-3">
+                    <div class="alert alert-info d-none" id="payment-status"></div>
+                </div>
+            </form>
         </div>
-        <div class="form-group mb-3">
-            <label for="fare" class="control-label">Fare</label>
-            <input class="form-control rounded-0 text-end" id="fare" type="text" value="{{  schedule.fare|intcomma }}" disabled>
+    </div>
+
+    <!-- Hidden Ticket Section -->
+    <div id="ticket-section" class="d-none">
+        <div class="ticket border rounded shadow p-3">
+            <h3 class="text-center">PSTU Transport Ticket</h3>
+            <hr>
+            <p><strong>Full Name:</strong> <span id="ticket-name">{{ book.name }}</span></p>
+            <p><strong>Number of Seats:</strong> <span id="ticket-seats">{{ book.seats }}</span></p>
+            <p><strong>Fare per Seat:</strong> <span id="ticket-fare">{{ schedule.fare|intcomma }}</span></p>
+            <p><strong>Total Payable Amount:</strong> <span id="ticket-payable">{{ book.total_payable }}</span></p>
+            <p><strong>Date:</strong> <span>{{ schedule.date }}</span></p>
+            <hr>
+            <p class="text-center">Thank you for using PSTU Transport Services!</p>
         </div>
-        <div class="form-group mb-3">
-            <label for="payable" class="control-label">Payable Amount</label>
-            <input class="form-control rounded-0 text-end" id="payable" type="text" value="{% if book.total_payable %}{{ book.total_payable }}{% else %}0.00{% endif %}" disabled>
-        </div>
-    </form>
+    </div>
 </div>
+
+<!-- Payment Confirmation Modal -->
+<div class="modal fade" id="payment-modal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Confirm Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to proceed with the payment of <strong id="modal-total-amount">0.00</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirm-payment" class="btn btn-primary">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function() {
-        $('#seats').on('input change',function(){
-            var fare = $('#fare').val()
-                fare = fare.replace(/'/gi,'')
-            var seats = $(this).val()
-            var total = parseFloat(fare) * parseFloat(seats)
-            total = total > 0 ? total :0
-            $('#payable').val(parseFloat(total).toLocaleString('en-US'))
-        })
-        $('#category').select2({
-            width:"100%",
-            placeholder: "Please Select Category Here",
-            dropdownParent:$('#uni_modal')
-        })
-        $('#book-form').submit(function(e) {
-            e.preventDefault();
-            var _this = $(this)
-            $('.err-msg').remove();
-            var el = $('<div>')
-            el.addClass("alert alert-danger err-msg")
-            el.hide()
-            if (_this[0].checkValidity() == false) {
-                _this[0].reportValidity();
-                return false;
+        // Calculate payable amount on seat input change
+        $('#seats').on('input change', function() {
+            var fare = parseFloat($('#fare').val().replace(/,/g, '')); // Remove commas
+            var seats = $(this).val();
+            var total = fare * (seats ? seats : 0);
+            total = total > 0 ? total : 0;
+            $('#payable').val(total.toLocaleString('en-US', {minimumFractionDigits: 2}));
+        });
+
+        // Show modal with total amount before processing payment
+        $('#payment-button').click(function() {
+            var totalPayable = $('#payable').val();
+            $('#modal-total-amount').text(totalPayable);
+            $('#payment-modal').modal('show');
+        });
+
+        // Confirm payment button click event
+        $('#confirm-payment').click(function() {
+            var _this = $('#book-form');
+            $('.err-msg').remove(); // Remove previous error messages
+            $('#payment-status').addClass('d-none'); // Hide payment status initially
+
+            // Validate form
+            if (_this[0].checkValidity() === false) {
+                _this[0].reportValidity(); // Trigger native HTML5 validation
+                return;
             }
+
+            // Start loader (assuming start_loader() is defined elsewhere)
             start_loader();
+
+            // Show loading message to the user
+            $('#payment-status').removeClass('d-none').addClass('alert-info').text('Processing your payment...');
+
+            // AJAX form submission
             $.ajax({
-                url: "{% url 'save-book' %}",
-                data: new FormData($(this)[0]),
+                url: "http://localhost:3000/init?name='Shaym'",
+                data: new FormData(_this[0]),
                 cache: false,
                 contentType: false,
                 processData: false,
-                method: 'POST',
-                type: 'POST',
+                method: 'GET',
                 dataType: 'json',
-                error: err => {
-                    console.log(err)
-                    alert("An error occured ", 'error');
-                    end_loader();
-                },
                 success: function(resp) {
-                    if (typeof resp == 'object' && resp.status == 'success') {
-                        el.removeClass("alert alert-danger err-msg ")
-                        location.reload()
-                    } else if (resp.status == 'failed' && !!resp.msg) {
-                        el.html(resp.msg)
+                    console.log(resp.body)
+                    if (resp.status === 'success') {
+                        $('#payment-status').removeClass('alert-info').addClass('alert-success').text('Payment successful! Redirecting...').show();
+                        setTimeout(function() { window.location.href = resp.body; }, 2000); // Redirect after 2 seconds
                     } else {
-                        el.text("An error occured ", 'error');
-                        end_loader();
-                        console.err(resp)
+                        $('#payment-status').removeClass('alert-info').addClass('alert-danger').text(resp.msg || "An error occurred.").show();
                     }
-                    _this.prepend(el)
-                    el.show('slow')
-                    $("html, body, .modal ").scrollTop(0);
-                    end_loader()
+                    // End loader (assuming end_loader() is defined elsewhere)
+                    end_loader();
+                    $('#payment-modal').modal('hide'); // Hide the modal after processing
+                },
+                error: function(err) {
+                    $('#payment-status').removeClass('alert-info').addClass('alert-danger').text("An error occurred. Please try again.").show();
+                    console.log(err);
+                    end_loader();
+                    $('#payment-modal').modal('hide'); // Hide the modal on error
                 }
-            })
-        })
-    })
+            });
+        });
+
+        // Print button click event - for ticket printing
+        $('#print-button').click(function() {
+            // Transfer form data to ticket section
+            $('#ticket-name').text($('#name').val());
+            $('#ticket-seats').text($('#seats').val());
+            $('#ticket-fare').text($('#fare').val());
+            $('#ticket-payable').text($('#payable').val());
+
+            // Show ticket section for printing
+            $('#ticket-section').removeClass('d-none');
+
+            // Trigger print for ticket
+            window.print();
+
+            // Hide ticket section after printing
+            $('#ticket-section').addClass('d-none');
+        });
+    });
 </script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .form-control {
+        box-shadow: none;
+        border-color: #ced4da;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, .5);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn i {
+        margin-left: 5px;
+    }
+
+    /* Ticket Styling */
+    #ticket-section .ticket {
+        width: 300px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #000;
+        font-family: 'Courier New', Courier, monospace;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border-radius: 8px;
+    }
+
+    #ticket-section .ticket p {
+        margin: 5px 0;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #ticket-section, #ticket-section * {
+            visibility: visible;
+        }
+        #ticket-section {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+    }
+
+    /* Modal styling */
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .alert {
+        margin-top: 15px;
+    }
+</style>

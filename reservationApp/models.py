@@ -72,6 +72,40 @@ class Booking(models.Model):
 
     def total_payable(self):
         return self.seats * self.schedule.fare
+from django.db import models
+
+from django.db import models
+
+class Requisition(models.Model):
+    date = models.DateField(auto_now=True)
+    requested_by = models.CharField(max_length=100, default="none")
+    faculty = models.CharField(max_length=100, default="none")
+    profession = models.CharField(max_length=100, default="none")  # New field for profession
+    email = models.EmailField(max_length=254, default="none@example.com")  # New field for email
+    location_from = models.CharField(max_length=100, default="none")
+    location_to = models.CharField(max_length=100, default="none")
+    purpose_of_trip = models.CharField(max_length=50, choices=[('govt', 'Government'), ('personal', 'Personal')], default='personal')
+    departure_date = models.DateField()
+    return_date = models.DateField()
+    number_of_passengers = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')], default='pending')
+
+    def __str__(self):
+        return f"Requisition by {self.requested_by} on {self.date}"
+
+class Seat(models.Model):
+    SEAT_STATUS = [
+        ('available', 'Available'),
+        ('reserved', 'Reserved'),
+        ('selected', 'Selected')
+    ]
+    
+    seat_number = models.CharField(max_length=5)
+    status = models.CharField(max_length=10, choices=SEAT_STATUS, default='available')
+    
+    def __str__(self):
+        return self.seat_number
+
 
 
 # @receiver(models.signals.post_save, sender=Invoice_Item)

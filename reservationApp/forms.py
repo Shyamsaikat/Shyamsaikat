@@ -259,6 +259,14 @@ class PayBooked(forms.ModelForm):
     class Meta:
         model = Booking
         fields = ('status',)
+from django import forms
+from .models import Seat
+
+class SeatSelectionForm(forms.ModelForm):
+    class Meta:
+        model = Seat
+        fields = ['seat_number']
+        
 
 
     

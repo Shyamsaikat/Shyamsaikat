@@ -3,156 +3,260 @@
 {% block pageContent %}
 <style>
     main {
-        height: 100%;
+        min-height: 100vh; /* Take the full viewport height */
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: auto;
+        background: rgba(0, 0, 0, 0.5);
+        background-image: url(../../media/uploads/ss.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+    }
+
+    .card {
+        max-width: 100%; /* Ensures the card doesn't overflow horizontally */
+        width: 100%; /* Full width for responsive behavior */
+        max-height: 90vh; /* Limits the card height to 90% of the viewport height */
+        overflow-y: auto; /* Enable vertical scroll if the card content exceeds the height */
+        margin: 20px auto;
+    }
+
+    .card-body {
+        padding: 15px; /* Ensure some spacing inside the card */
+    }
+
+    .card-header img {
+        float: right;
+        width: 100px;
+        height: auto;
+    }
+
+    /* Media queries to handle smaller screens */
+    @media (max-width: 768px) {
+        .card-header img {
+            width: 80px; /* Reduce logo size on smaller screens */
+        }
+
+        .card-title {
+            font-size: 1.25rem; /* Adjust title size */
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+        }
+
+        .card {
+            max-height: 100vh; /* Make sure card is responsive on small screens */
+            overflow-y: auto; /* Enable scrolling if content is too large */
+        }
+    }
+
+    @media print {
+        /* Print styles */
+        body * {
+            visibility: hidden; /* Hide everything initially */
+        }
+        #requisitionModal, #requisitionModal * {
+            visibility: visible; /* Make modal and its content visible */
+        }
+        #requisitionModal {
+            position: absolute; /* Position it for print */
+            left: 0;
+            top: 0;
+            right: 0;
+            margin: 0; /* Remove margins */
+            padding: 20px; /* Add padding for ticket feel */
+            background: white; /* Ensure background is white for print */
+            border: 2px solid black; /* Add a border for a ticket look */
+            box-shadow: none; /* Remove shadows for print */
+        }
+        .modal-footer {
+            display: none; /* Hide footer on print */
+        }
     }
 </style>
+
+<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
 <div class="row justify-content-center">
-    <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+    <div class="col-lg-6">
         <div class="card card-default rounded-0 shadow">
             <div class="card-header">
-                <h4 class="card-title"><b>Create Requisition</b></h4>
+                <img src="{% static '../../media/default/logo4.png' %}" alt="PSTU Logo" style="width: 100px; height: auto;">
+                <h4 class="card-title"><b>Patuakhali Science and Technology University</b></h4>
+                <h5 class="card-subtitle text-muted"> Transport Section</h5>
             </div>
             <div class="card-body">
-                <div class="container-fluid">
-                    <form id="create-requisition" method="POST" action="{% url 'requisition' %}">
-                        {% csrf_token %}
-                        <div class="mdc-layout-grid">
-                            <div class="mdc-layout-grid__inner">
-                                <div class="form-group mb-3">
-                                    <label for="date" class="control-label">Date</label>
-                                    <input type="date" class="form-control rounded-0" name="date" id="date" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="requested_by" class="control-label">Requested By</label>
-                                    <input type="text" class="form-control rounded-0" name="requested_by" id="requested_by" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="faculty" class="control-label">Faculty</label>
-                                    <input type="text" class="form-control rounded-0" name="faculty" id="faculty" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="location_from" class="control-label">Location From</label>
-                                    <input type="text" class="form-control rounded-0" name="location_from" id="location_from" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="location_to" class="control-label">Location To</label>
-                                    <input type="text" class="form-control rounded-0" name="location_to" id="location_to" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="purpose_of_trip" class="control-label">Purpose of Trip</label>
-                                    <input type="text" class="form-control rounded-0" name="purpose_of_trip" id="purpose_of_trip" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="departure_date" class="control-label">Departure Date</label>
-                                    <input type="date" class="form-control rounded-0" name="departure_date" id="departure_date" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="return_date" class="control-label">Return Date</label>
-                                    <input type="date" class="form-control rounded-0" name="return_date" id="return_date" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="number_of_passengers" class="control-label">Number of Passengers</label>
-                                    <input type="number" class="form-control rounded-0" name="number_of_passengers" id="number_of_passengers" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <div class="d-flex w-100 justify-content-end">
-                                        <button type="submit" class="btn btn-sm rounded-0 btn-primary col-4">Submit</button>
-                                    </div>
-                                </div>
-                            </div>
+                <form id="create-requisition" method="POST" action="{% url 'requisition' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" name="date" id="date" required>
                         </div>
-                    </form>
-                </div>
+                        <div class="col-md-6">
+                            <label for="purpose_of_trip" class="form-label">Purpose of Trip</label>
+                            <select class="form-select" name="purpose_of_trip" id="purpose_of_trip" required>
+                                <option value="">Select Purpose</option>
+                                <option value="govt">Government</option>
+                                <option value="personal">Personal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profession" class="form-label">Profession</label>
+                            <select class="form-select" name="profession" id="profession" required>
+                                <option value="">Select Profession</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="requested_by" class="form-label">Requested By</label>
+                            <input type="text" class="form-control" name="requested_by" id="requested_by" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="faculty" class="form-label">Faculty</label>
+                            <input type="text" class="form-control" name="faculty" id="faculty" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="location_from" class="form-label">Location From</label>
+                            <input type="text" class="form-control" name="location_from" id="location_from" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="location_to" class="form-label">Location To</label>
+                            <input type="text" class="form-control" name="location_to" id="location_to" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="departure_date" class="form-label">Departure Date</label>
+                            <input type="date" class="form-control" name="departure_date" id="departure_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="return_date" class="form-label">Return Date</label>
+                            <input type="date" class="form-control" name="return_date" id="return_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="number_of_passengers" class="form-label">Number of Passengers</label>
+                            <input type="number" class="form-control" name="number_of_passengers" id="number_of_passengers" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" name="email" id="email" required>
+                        </div>
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary" id="submit-btn">Submit</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-<!-- New section to display requisition details -->
-<div id="requisition-details" style="display: none;">
-    <h2>Requisition Details</h2>
-    <p>Date: <span id="req-date"></span></p>
-    <p>Requested By: <span id="req-requested_by"></span></p>
-    <p>Faculty: <span id="req-faculty"></span></p>
-    <p>Location From: <span id="req-location_from"></span></p>
-    <p>Location To: <span id="req-location_to"></span></p>
-    <p>Purpose of Trip: <span id="req-purpose_of_trip"></span></p>
-    <p>Departure Date: <span id="req-departure_date"></span></p>
-    <p>Return Date: <span id="req-return_date"></span></p>
-    <p>Number of Passengers: <span id="req-number_of_passengers"></span></p>
-    <!-- Display more requisition details as needed -->
-    <button id="save-requisition" class="btn btn-sm rounded-0 btn-primary">Save</button>
-    <button id="print-requisition" class="btn btn-sm rounded-0 btn-primary" onclick="printRequisitionDetails()">Print</button>
+
+<div class="modal fade" id="requisitionModal" tabindex="-1" aria-labelledby="requisitionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="{% static '../../media/default/logo4.png' %}" alt="PSTU Logo" style="width: 100px; height: auto;">
+                <h4 class="card-title"><b>Patuakhali Science and Technology University</b></h4>
+                <h5 class="card-subtitle text-muted"> Transport Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h2>PSTU Transport Section</h2>
+                <p>Date: <span id="req-date"></span></p>
+                <p>Requested By: <span id="req-requested_by"></span></p>
+                <p>Faculty: <span id="req-faculty"></span></p>
+                <p>Location From: <span id="req-location_from"></span></p>
+                <p>Location To: <span id="req-location_to"></span></p>
+                <p>Purpose of Trip: <span id="req-purpose_of_trip"></span></p>
+                <p>Profession: <span id="req-profession"></span></p>
+                <p>Departure Date: <span id="req-departure_date"></span></p>
+                <p>Return Date: <span id="req-return_date"></span></p>
+                <p>Number of Passengers: <span id="req-number_of_passengers"></span></p>
+                <p>Email Address: <span id="req-email"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button id="save-requisition" class="btn btn-sm rounded-0 btn-primary">Save</button>
+                <button id="send-email" class="btn btn-sm rounded-0 btn-primary">Send Mail</button>
+                <button id="print-requisition" class="btn btn-sm rounded-0 btn-primary" onclick="printRequisitionDetails()">Print</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Function to display requisition details when form is submitted
-    document.getElementById('create-requisition').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        // Collect form data
-        var formData = new FormData(this);
+document.getElementById('create-requisition').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    var formData = new FormData(this);
 
-        // Display requisition details
-        document.getElementById('requisition-details').style.display = 'block';
-        document.getElementById('req-date').textContent = formData.get('date');
-        document.getElementById('req-requested_by').textContent = formData.get('requested_by');
-        document.getElementById('req-faculty').textContent = formData.get('faculty');
-        document.getElementById('req-location_from').textContent = formData.get('location_from');
-        document.getElementById('req-location_to').textContent = formData.get('location_to');
-        document.getElementById('req-purpose_of_trip').textContent = formData.get('purpose_of_trip');
-        document.getElementById('req-departure_date').textContent = formData.get('departure_date');
-        document.getElementById('req-return_date').textContent = formData.get('return_date');
-        document.getElementById('req-number_of_passengers').textContent = formData.get('number_of_passengers');
+    document.getElementById('req-date').textContent = formData.get('date');
+    document.getElementById('req-requested_by').textContent = formData.get('requested_by');
+    document.getElementById('req-faculty').textContent = formData.get('faculty');
+    document.getElementById('req-location_from').textContent = formData.get('location_from');
+    document.getElementById('req-location_to').textContent = formData.get('location_to');
+    document.getElementById('req-purpose_of_trip').textContent = formData.get('purpose_of_trip');
+    document.getElementById('req-profession').textContent = formData.get('profession');
+    document.getElementById('req-departure_date').textContent = formData.get('departure_date');
+    document.getElementById('req-return_date').textContent = formData.get('return_date');
+    document.getElementById('req-number_of_passengers').textContent = formData.get('number_of_passengers');
+    document.getElementById('req-email').textContent = formData.get('email');
+
+    var requisitionModal = new bootstrap.Modal(document.getElementById('requisitionModal'));
+    requisitionModal.show();
+});
+
+document.getElementById('save-requisition').addEventListener('click', function() {
+    var formData = new FormData(document.getElementById('create-requisition'));
+    
+    fetch('/save-requisition/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Requisition saved successfully!');
+        } else {
+            alert('Failed to save requisition.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the requisition.');
     });
+});
 
-    // Function to save requisition details as a file
-    document.getElementById('save-requisition').addEventListener('click', function() {
-        // Collect requisition details
-        var date = document.getElementById('req-date').textContent;
-        var requested_by = document.getElementById('req-requested_by').textContent;
-        var faculty = document.getElementById('req-faculty').textContent;
-        var location_from = document.getElementById('req-location_from').textContent;
-        var location_to = document.getElementById('req-location_to').textContent;
-        var purpose_of_trip = document.getElementById('req-purpose_of_trip').textContent;
-        var departure_date = document.getElementById('req-departure_date').textContent;
-        var return_date = document.getElementById('req-return_date').textContent;
-        var number_of_passengers = document.getElementById('req-number_of_passengers').textContent;
-        
-        // Create a text file content with requisition details
-        var fileContent = 'Requisition Details:\n';
-        fileContent += 'Date: ' + date + '\n';
-        fileContent += 'Requested By: ' + requested_by + '\n';
-        fileContent += 'Faculty: ' + faculty + '\n';
-        fileContent += 'Location From: ' + location_from + '\n';
-        fileContent += 'Location To: ' + location_to + '\n';
-        fileContent += 'Purpose of Trip: ' + purpose_of_trip + '\n';
-        fileContent += 'Departure Date: ' + departure_date + '\n';
-        fileContent += 'Return Date: ' + return_date + '\n';
-        fileContent += 'Number of Passengers: ' + number_of_passengers + '\n';
+document.getElementById('send-email').addEventListener('click', function() {
+    var formData = new FormData(document.getElementById('create-requisition'));
+    document.getElementById('send-email').textContent = 'Loading...';
 
-        // Create a Blob with file content
-        var blob = new Blob([fileContent], { type: 'text/plain' });
-
-        // Create a link element to trigger the download
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'requisition_details.txt';
-        a.click();
+    fetch('/send-requisition-email/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Email sent successfully!');
+        } else {
+            alert('Failed to send email.');
+        }
+        document.getElementById('send-email').textContent = 'Send Mail';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while sending the email.');
+        document.getElementById('send-email').textContent = 'Send Mail';
     });
+});
 
-    // Function to print requisition details
-    function printRequisitionDetails() {
-        // Hide the button before printing
-        document.getElementById('print-requisition').style.display = 'none';
-        // Print requisition details
-        window.print();
-        // Show the button after printing
-        document.getElementById('print-requisition').style.display = 'block';
-    }
+function printRequisitionDetails() {
+    window.print();
+}
 </script>
-{% endblock pageContent %}
+{% endblock %}

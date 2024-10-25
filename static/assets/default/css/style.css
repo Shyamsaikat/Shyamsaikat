@@ -5,7 +5,11 @@ body {
     max-height: 100%;
     overflow: auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Flex items arranged vertically */
+    background-image: url('../../../../media/uploads/ss.jpg');
+    background-size: cover; /* Ensure the image covers the entire body */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent repeating */
 }
 
 body>header {
@@ -13,9 +17,13 @@ body>header {
 }
 
 body>main {
-    flex-shrink: auto;
-    flex-grow: auto;
-    overflow: auto;
+    
+    background-image: url(../../media/uploads/ss.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    margin: 0;
 }
 
 body>footer {
@@ -217,4 +225,81 @@ span.select2-selection.select2-selection--single {
 .clip-text {
     position: fixed;
     top: 0;
+}
+.btn {
+    padding: 0.6rem 2rem;
+    margin: 5px;
+    color: #fff;
+    border-radius: 3px;
+    background-image: linear-gradient( 122deg, #d64635 0%, #ff604d 100%);
+    box-shadow: 0px 9px 32px 0px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+    border: 0;
+    cursor: pointer;
+  }
+  
+  .btn:hover,
+  .btn:focus,
+  .btn:active,
+  .btn:not([disabled]):not(.disabled).active,
+  .btn:not([disabled]):not(.disabled):active,
+  .show>.btn.dropdown-toggle {
+    background-image: linear-gradient( 122deg, #ce4333 0%, #f55c4a 100%);
+    box-shadow: 0px 9px 32px 0px rgba(0, 0, 0, 0.3);
+    color: #FFF;
+  }
+  
+  .btn:enabled,
+  .btn[disabled]{
+    background-image: linear-gradient( 122deg, #ff867b 0%, #ff867b 100%);
+    box-shadow: 0px 9px 32px 0px rgba(0, 0, 0, 0.3);
+    color: #FFF;
+  }
+/* Custom button styles */
+.custom-btn {
+    padding: 8px 16px;
+    border-radius: 25px; /* Makes buttons rounded */
+    font-weight: bold;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.accept-btn {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.accept-btn:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2); /* Subtle shadow on hover */
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2); /* Subtle shadow on hover */
+}
+
+.send-mail-btn {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.send-mail-btn:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Subtle shadow on hover */
+}
+
+/* Add spacing between buttons */
+.custom-btn:not(:last-child) {
+    margin-right: 10px;
 }

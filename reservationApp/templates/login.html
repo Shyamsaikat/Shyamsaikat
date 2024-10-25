@@ -1,112 +1,193 @@
-{% extends 'base.html' %}{% load static %}{% block pageContent %}
+{% extends 'base.html' %}
+{% load static %}
+{% block pageContent %}
 <style>
-    main {
-        height: 100%;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: auto;
+    body, html {
+        height: 100%; /* Full height for body and html */
+        margin: 0; /* Remove default margin */
+        font-family: 'Arial', sans-serif; /* Clean font for readability */
+        background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5)), url(../../media/uploads/ss.jpg) no-repeat center center / cover; /* Gradient overlay */
+        color: #ffffff; /* Default text color */
     }
-    #logo-img{
-        height: 11em;
-        width: 26em;
+
+    #logo-img {
+        width: 100%; /* Full width for responsiveness */
+        max-width: 250px; /* Limit maximum width */
+        margin-bottom: 20px; /* Space below logo */
+    }
+
+    .card {
+        border-radius: 30px; /* Increased rounded corners for a softer look */
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7); /* Enhanced shadow for depth */
+        background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background for the card */
+        transition: transform 0.3s; /* Smooth transformation on hover */
+        overflow: hidden; /* Clip children that exceed the card */
+    }
+
+    .card:hover {
+        transform: translateY(-5px); /* Lift effect on hover */
+    }
+
+    .card-header {
+        background-color: rgba(0, 123, 255, 0.9); /* Slightly opaque primary color */
+        color: white; /* White text */
+        text-align: center; /* Center the text */
+        padding: 20px; /* Padding for header */
+        border-top-left-radius: 30px; /* Rounded corners */
+        border-top-right-radius: 30px; /* Rounded corners */
+        position: relative; /* For possible decorative elements */
+    }
+
+    .card-header::after {
+        content: ""; /* Decorative element */
+        position: absolute;
+        left: 50%;
+        bottom: -10px; /* Position below the header */
+        width: 60px; /* Width of the decorative element */
+        height: 6px; /* Height of the decorative element */
+        background: #ffffff; /* White underline */
+        border-radius: 3px; /* Rounded corners for the line */
+        transform: translateX(-50%); /* Center the line */
+    }
+
+    .form-group label {
+        font-weight: bold; /* Bold labels */
+        color: #007bff; /* Primary color for labels */
+    }
+
+    .form-control {
+        border-radius: 10px; /* Rounded input fields */
+        border: 1px solid #007bff; /* Border color */
+        transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition for focus */
+    }
+
+    .form-control:focus {
+        border-color: #0056b3; /* Darker blue on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Glow effect */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Primary color */
+        border-color: #007bff; /* Button border color */
+        width: 100%; /* Full width button */
+        border-radius: 10px; /* Rounded button */
+        font-weight: bold; /* Bold button text */
+        transition: all 0.3s; /* Smooth transition on hover */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        border-color: #004085; /* Darker border on hover */
+        transform: translateY(-2px); /* Lift effect on hover */
+    }
+
+    .err-msg {
+        margin-top: 10px; /* Space above error message */
+        display: none; /* Hide by default */
+    }
+
+    .footer-link {
+        color: #007bff; /* Primary color for links */
+        text-decoration: underline; /* Underline for links */
+    }
+
+    .footer-link:hover {
+        color: #0056b3; /* Darker blue on hover */
+    }
+
+    @media (max-width: 768px) {
+        #logo-img {
+            max-width: 200px; /* Adjust logo size on smaller screens */
+        }
+        .card {
+            width: 90%; /* Ensure card is responsive */
+        }
     }
 </style>
-<div class="d-flex flex-column w-100 justify-content-center align-items-center">
-    <div class="mb-4">
-        <center>
-            <img src="{{ MEDIA_URL }}/default/logo.png" alt="" id="logo-img">
-        </center>
-    </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
-        <div class="card card-default rounded-0 shadow">
-            <div class="card-header">
-                <h4 class="card-title"><b>Login</b></h4>
-            </div>
-            <div class="card-body">
-                <div class="container-fluid">
+
+<main>
+    <div class="d-flex flex-column w-100 justify-content-center align-items-center">
+        <img src="{{ MEDIA_URL }}/default/logo4.png" alt="" id="logo-img">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title"><b>Login</b></h4>
+                </div>
+                <div class="card-body">
                     <form id="login-user">
                         {% csrf_token %}
-                        <div class="mdc-layout-grid">
-                            <div class="mdc-layout-grid__inner">
-                                <div class="form-group mb-3">
-                                    <label for="username" class="control-label">Username</label>
-                                    <input type="text" class="form-control rounded-0" autofocus name="username" id="username" required="required">
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="password" class="control-label">Password</label>
-                                    <input type="password" class="form-control rounded-0" name="password" id="password" required="required">
-                                </div>
-                                <div class="form-group mb-3">
-                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                        <div class="col-md-4">
-                                            {% comment %} <a href="{% url 'register-user' %}">Signup</a> {% endcomment %}
-                                        </div>
-                                        <button class="btn btn-sm rounded-0 btn-primary">
-                                                Login
-                                            </button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label for="username" class="control-label">Username</label>
+                            <input type="text" class="form-control" autofocus name="username" id="username" required="required">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password" class="control-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="password" required="required">
+                        </div>
+                        <div class="form-group mb-3">
+                            <button class="btn btn-sm btn-primary" type="submit">Login</button>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-muted">Don't have an account? <a href="{% url 'register-user' %}" class="footer-link">Sign up</a></p>
                         </div>
                     </form>
+                    <div class="err-msg"></div> <!-- Placeholder for error messages -->
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 
-{% endblock pageContent %} {% block ScriptBlock %}
+{% endblock pageContent %}
+
+{% block ScriptBlock %}
 <script>
     $(function() {
         $('#login-user').submit(function(e) {
             e.preventDefault();
-            var _this = $(this)
-            $('.err-msg').remove();
-            var el = $('<div>')
-            el.addClass("alert alert-danger err-msg")
-            el.hide()
-            if (_this[0].checkValidity() == false) {
-                _this[0].reportValidity();
+            var _this = $(this);
+            $('.err-msg').remove(); // Remove previous error messages
+            var el = $('<div>').addClass("alert alert-danger err-msg").hide(); // Create a new error message element
+
+            // Check form validity
+            if (_this[0].checkValidity() === false) {
+                _this[0].reportValidity(); // Trigger browser validation
                 return false;
             }
+
             start_loader();
             $.ajax({
                 headers: {
-                    "X-CSRFToken": '{{csrf_token}}'
+                    "X-CSRFToken": '{{ csrf_token }}'
                 },
                 url: "{% url 'login-user' %}",
-                data: new FormData($(this)[0]),
+                data: new FormData(this),
                 cache: false,
                 contentType: false,
                 processData: false,
                 method: 'POST',
-                type: 'POST',
                 dataType: 'json',
-                error: err => {
-                    console.log(err)
-                    alert_toast("An error occured", 'error');
+                error: function(err) {
+                    console.log(err);
+                    alert_toast("An error occurred", 'error');
                     end_loader();
                 },
                 success: function(resp) {
-                    if (typeof resp == 'object' && resp.status == 'success') {
-                        el.removeClass("alert alert-danger err-msg")
-                        location.href = "{% url 'home-page' %}"
-                    } else if (resp.status == 'failed' && !!resp.msg) {
-                        el.text(resp.msg)
+                    if (typeof resp === 'object' && resp.status === 'success') {
+                        el.removeClass("alert alert-danger err-msg");
+                        location.href = "{% url 'home-page' %}";
+                    } else if (resp.status === 'failed' && !!resp.msg) {
+                        el.text(resp.msg);
                     } else {
-                        el.text("An error occured", 'error');
-                        end_loader();
-                        console.err(resp)
+                        el.text("An error occurred").addClass('alert-danger');
                     }
-                    _this.prepend(el)
-                    el.show('slow')
-                    $("html, body, .modal").scrollTop(0);
-                    end_loader()
+                    _this.prepend(el);
+                    el.show('slow'); // Show the error message
+                    $("html, body, .modal").scrollTop(0); // Scroll to the top
+                    end_loader();
                 }
-            })
-        })
-    })
+            });
+        });
+    });
 </script>
 {% endblock ScriptBlock %}
