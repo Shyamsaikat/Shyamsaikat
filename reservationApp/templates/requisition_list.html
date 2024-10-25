@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block pageContent %}
+<style>
+    .requisition-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px; /* Spacing between list items */
+        margin-top: 20px;
+    }
+
+    .requisition-item {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .requisition-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .requisition-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        font-size: 0.95rem;
+    }
+
+    .requisition-content div {
+        flex: 1 1 200px; /* Allows for responsive columns */
+    }
+
+    .requisition-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Button styles */
+    .custom-btn {
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .accept-btn {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+
+    .accept-btn:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+    }
+
+    .reject-btn {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+    .reject-btn:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2);
+    }
+
+    .send-mail-btn {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    .send-mail-btn:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    }
+
+    .no-requisitions {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #ff3e00;
+        text-align: center;
+    }
+
+</style>
+
+<div class="container">
+    <h2>Requisition List</h2>
+
+    <div class="requisition-list">
+        {% for requisition in requisitions %}
+        <div class="requisition-item">
+            <div class="requisition-header">
+                <div>Requisition ID: {{ requisition.id }}</div>
+                <div>Status: {{ requisition.get_status_display }}</div>
+            </div>
+
+            <div class="requisition-content">
+                <div><strong>Date:</strong> {{ requisition.date }}</div>
+                <div><strong>Requested By:</strong> {{ requisition.requested_by }}</div>
+                <div><strong>Profession:</strong> {{ requisition.profession }}</div>
+                <div><strong>Email:</strong> {{ requisition.email }}</div>
+                <div><strong>Faculty:</strong> {{ requisition.faculty }}</div>
+                <div><strong>From:</strong> {{ requisition.location_from }}</div>
+                <div><strong>To:</strong> {{ requisition.location_to }}</div>
+                <div><strong>Purpose:</strong> {{ requisition.get_purpose_of_trip_display }}</div>
+                <div><strong>Departure Date:</strong> {{ requisition.departure_date }}</div>
+                <div><strong>Return Date:</strong> {{ requisition.return_date }}</div>
+                <div><strong>Passengers:</strong> {{ requisition.number_of_passengers }}</div>
+            </div>
+
+            <div class="requisition-actions">
+                <a href="{% url 'accept_requisition' requisition.id %}" class="btn custom-btn accept-btn">Accept</a>
+                <a href="{% url 'reject_requisition' requisition.id %}" class="btn custom-btn reject-btn">Reject</a>
+                <button class="btn custom-btn send-mail-btn" data-bs-toggle="modal" data-bs-target="#sendMailModal" data-id="{{ requisition.id }}" data-email="{{ requisition.email }}">Send Mail</button>
+                <a href="{% url 'delete_requisition' requisition.id %}" class="btn btn-danger custom-btn" onclick="return confirm('Are you sure you want to delete this requisition?');">Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-requisitions">No requisitions found.</div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Send Mail Modal -->
+<div class="modal fade" id="sendMailModal" tabindex="-1" aria-labelledby="sendMailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendMailModalLabel">Send Mail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="sendMailForm" method="POST" action="{% url 'send_mail' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="requisition_id" id="requisition_id">
+                    <div class="form-group mb-3">
+                        <label for="driver_name">Driver Name</label>
+                        <input type="text" class="form-control" name="driver_name" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="bus_number">Bus Number</label>
+                        <input type="text" class="form-control" name="bus_number" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="status">Status</label>
+                        <select class="form-control" name="status" required>
+                            <option value="Accepted">Accepted</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" name="email" id="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Mail</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pre-fill the requisition ID and email when the modal is opened
+    document.querySelectorAll('button[data-bs-target="#sendMailModal"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const requisitionId = this.getAttribute('data-id');
+            const email = this.getAttribute('data-email');
+            document.getElementById('requisition_id').value = requisitionId;
+            document.getElementById('email').value = email;
+        });
+    });
+</script>
+
+{% endblock pageContent %}
+

@@ -1,0 +1,7 @@
+<form method="post" action="{% url 'initiate_payment' %}">
+    <!-- Include necessary input fields like amount, order ID, etc. -->
+    <input type="hidden" name="amount" value="{% if book.total_payable %}{{ book.total_payable }}{% else %}0.00{% endif %}">
+    <input type="hidden" name="order_id" value="{{ book.id }}">
+    <!-- Include other necessary fields -->
+    <button type="submit" class="btn btn-primary">Pay Now</button>
+</form>

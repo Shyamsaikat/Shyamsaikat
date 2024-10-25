@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block pageContent %}
+<style>
+    main {
+        
+        background-image: url(../../media/uploads/ss.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        margin: 0;
+        color: white;
+        font-family: 'Arial', sans-serif; /* Clean font for modern look */
+    }
+
+    .card {
+        border-radius: 15px; /* Rounded corners */
+        background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+        backdrop-filter: blur(10px); /* Blurring the background */
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Light border */
+    }
+
+    .seat {
+        width: 70px; /* Increased size for better clicking */
+        height: 70px; /* Increased size for better clicking */
+        background-color: #28a745; /* Available color */
+        color: white;
+        margin: 10px; /* Increased margin for better spacing */
+        border-radius: 10px; /* Rounded edges */
+        text-align: center;
+        line-height: 70px; /* Center text vertically */
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        font-size: 1.2em; /* Larger font size for better readability */
+    }
+
+    .seat:hover {
+        background-color: #218838; /* Darker green on hover */
+        transform: scale(1.1); /* Slightly enlarge on hover */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+    }
+
+    .seat.selected {
+        background-color: #007bff; /* Selected color */
+        border: 2px solid #0056b3; /* Border for clarity */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Shadow for selected seat */
+    }
+
+    .seat.reserved {
+        background-color: #dc3545; /* Reserved color */
+        cursor: not-allowed;
+    }
+
+    .seat-map {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px; /* Increased gap for better spacing */
+        margin-bottom: 20px;
+    }
+
+    .legend {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 1em; /* Adjusted font size for the legend */
+    }
+
+    .legend div {
+        margin-right: 30px;
+    }
+
+    .legend div span {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border-radius: 3px;
+        margin-right: 5px;
+    }
+
+    .card-title {
+        text-align: center;
+        font-size: 1.5em; /* Increased title size */
+        margin-bottom: 20px; /* Space below title */
+    }
+
+    .btn {
+        background-color: #007bff; /* Button color */
+        border: none;
+        border-radius: 5px; /* Rounded button edges */
+        padding: 10px; /* Button padding */
+        font-size: 1.1em; /* Larger font for button */
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    .selected-seat-title {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.3em; /* Increased font size */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .seat {
+            width: 50px; /* Smaller size for mobile */
+            height: 50px;
+            line-height: 50px; /* Adjust line height */
+            font-size: 1em; /* Adjust font size */
+        }
+
+        .legend {
+            flex-direction: column; /* Stack legends on smaller screens */
+            align-items: center; /* Center legends */
+        }
+
+        .legend div {
+            margin-bottom: 10px; /* Space between legend items */
+        }
+    }
+</style>
+
+<div class="d-flex flex-column w-100 justify-content-center align-items-center">
+    <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
+        <div class="card card-default rounded-0 shadow">
+            <div class="card-header">
+                <h4 class="card-title"><b>Select Your Seat</b></h4>
+            </div>
+            <div class="card-body">
+                <div class="legend">
+                    <div><span style="background-color: #28a745;"></span> Available</div>
+                    <div><span style="background-color: #dc3545;"></span> Reserved</div>
+                    <div><span style="background-color: #007bff;"></span> Selected</div>
+                </div>
+                <form id="seat-selection-form" method="POST" action="{% url 'submit-seat-selection' %}">
+                    {% csrf_token %}
+                    <div class="seat-map">
+                        <!-- Seat Row 1 -->
+                        <div class="seat" data-seat="1A" title="Available">1A</div>
+                        <div class="seat reserved" data-seat="1B" title="Reserved">1B</div>
+                        <div class="seat" data-seat="1C" title="Available">1C</div>
+                        <div class="seat" data-seat="1D" title="Available">1D</div>
+                        
+                        <!-- Seat Row 2 -->
+                        <div class="seat" data-seat="2A" title="Available">2A</div>
+                        <div class="seat" data-seat="2B" title="Available">2B</div>
+                        <div class="seat reserved" data-seat="2C" title="Reserved">2C</div>
+                        <div class="seat" data-seat="2D" title="Available">2D</div>
+                        
+                        <!-- Seat Row 3 -->
+                        <div class="seat" data-seat="3A" title="Available">3A</div>
+                        <div class="seat" data-seat="3B" title="Available">3B</div>
+                        <div class="seat reserved" data-seat="3C" title="Reserved">3C</div>
+                        <div class="seat" data-seat="3D" title="Available">3D</div>
+                        
+                        <!-- Seat Row 4 -->
+                        <div class="seat" data-seat="4A" title="Available">4A</div>
+                        <div class="seat" data-seat="4B" title="Available">4B</div>
+                        <div class="seat" data-seat="4C" title="Available">4C</div>
+                        <div class="seat" data-seat="4D" title="Available">4D</div>
+                        
+                        <!-- Seat Row 5 -->
+                        <div class="seat reserved" data-seat="5A" title="Reserved">5A</div>
+                        <div class="seat" data-seat="5B" title="Available">5B</div>
+                        <div class="seat" data-seat="5C" title="Available">5C</div>
+                        <div class="seat" data-seat="5D" title="Available">5D</div>
+                        
+                        <!-- Seat Row 6 -->
+                        <div class="seat" data-seat="6A" title="Available">6A</div>
+                        <div class="seat" data-seat="6B" title="Available">6B</div>
+                        <div class="seat" data-seat="6C" title="Available">6C</div>
+                        <div class="seat" data-seat="6D" title="Available">6D</div>
+                        
+                        <!-- Seat Row 7 -->
+                        <div class="seat" data-seat="7A" title="Available">7A</div>
+                        <div class="seat" data-seat="7B" title="Available">7B</div>
+                        <div class="seat" data-seat="7C" title="Available">7C</div>
+                        <div class="seat" data-seat="7D" title="Available">7D</div>
+                    </div>
+
+                    <!-- Hidden input to store selected seat -->
+                    <input type="hidden" name="selected_seat" id="selected_seat" required>
+
+                    <div class="form-group mb-3 mt-4">
+                        <button type="submit" class="btn w-100">Confirm Selection</button>
+                    </div>
+                </form>
+                <div class="selected-seat-title" id="selected-seat-title">Selected Seat: None</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock pageContent %}
+
+{% block ScriptBlock %}
+<script>
+    $(document).ready(function() {
+        // Handle seat selection
+        $('.seat').click(function() {
+            if (!$(this).hasClass('reserved')) {
+                // Deselect all other seats
+                $('.seat').removeClass('selected');
+                // Select the clicked seat
+                $(this).addClass('selected');
+                // Update the hidden input with the selected seat
+                $('#selected_seat').val($(this).data('seat'));
+                // Update the displayed selected seat title
+                $('#selected-seat-title').text('Selected Seat: ' + $(this).data('seat'));
+            }
+        });
+
+        // Ensure that the user has selected a seat before submitting the form
+        $('#seat-selection-form').submit(function(e) {
+            if (!$('#selected_seat').val()) {
+                alert('Please select a seat before submitting.');
+                e.preventDefault();
+            } else {
+                // Confirm before submitting
+                if (!confirm('You have selected seat ' + $('#selected_seat').val() + '. Do you want to confirm this selection?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+</script>
+{% endblock ScriptBlock %}
