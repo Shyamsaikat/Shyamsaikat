@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from . import views
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
+from .views import create_requisition
 
 urlpatterns = [
     path('redirect-admin', RedirectView.as_view(url="/admin"),name="redirect-admin"),
@@ -44,7 +45,8 @@ urlpatterns = [
     path('pay_booked',views.pay_booked,name='pay-booked'),
     path('delete_booking',views.delete_booking,name='delete-booking'),
     path('find_trip',views.find_trip,name='find-trip-page'),
-    path('requisition',views.requisition_on,name='requisition-page'),
+    path('requisition',views.requisition_on,name='requisition'),
+    #path('requisition',views.create_requisition, name='create_requisition'),
 
 
 ]

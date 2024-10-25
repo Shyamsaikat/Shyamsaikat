@@ -58,5 +58,20 @@ class Migration(migrations.Migration):
                 ('depart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='depart_location', to='reservationApp.location')),
                 ('destination', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='destination', to='reservationApp.location')),
             ],
+         ),
+        migrations.CreateModel(
+            name='requisition',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code', models.CharField(max_length=100)),
+                ('schedule', models.DateTimeField()),
+                ('fare', models.FloatField()),
+                ('status', models.CharField(choices=[('1', 'Active'), ('2', 'Cancelled')], default=1, max_length=2)),
+                ('date_created', models.DateTimeField(default=django.utils.timezone.now)),
+                ('date_updated', models.DateTimeField(auto_now=True)),
+                ('bus', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reservationApp.bus')),
+                ('depart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='depart_location', to='reservationApp.location')),
+                ('destination', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='destination', to='reservationApp.location')),
+            ],    
         ),
     ]

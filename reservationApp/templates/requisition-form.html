@@ -1,4 +1,6 @@
-{% extends 'base.html' %}{% load static %}{% block pageContent %}
+{% extends 'base.html' %}
+{% load static %}
+{% block pageContent %}
 <style>
     main {
         height: 100%;
@@ -17,44 +19,49 @@
             </div>
             <div class="card-body">
                 <div class="container-fluid">
-                    <form id="register-user" method="POST" action="{% url 'register-user' %}" enctype="multipart/form-data">
+                    <form id="create-requisition" method="POST" action="{% url 'requisition' %}">
                         {% csrf_token %}
                         <div class="mdc-layout-grid">
                             <div class="mdc-layout-grid__inner">
                                 <div class="form-group mb-3">
                                     <label for="date" class="control-label">Date</label>
-                                    <input type="text" class="form-control rounded-0" name="date" id="date" value="{{ reg_form.data.date }}" required="required">
+                                    <input type="date" class="form-control rounded-0" name="date" id="date" required>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="reg_form.data.requested_by" class="control-label">Requested By</label>
-                                    <input type="text" class="form-control rounded-0" name="reg_form.data.requested_by" id="reg_form.data.requested_by" value="{{ reg_form.data.reg_form.data.requested_by }}" required="required">
+                                    <label for="requested_by" class="control-label">Requested By</label>
+                                    <input type="text" class="form-control rounded-0" name="requested_by" id="requested_by" required>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="faculty" class="control-label">Faculty</label>
-                                    <input type="faculty" class="form-control rounded-0" name="faculty" id="faculty" value="{{ reg_form.data.faculty }}" required="required">
+                                    <input type="text" class="form-control rounded-0" name="faculty" id="faculty" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="location_from" class="control-label">Location From</label>
+                                    <input type="text" class="form-control rounded-0" name="location_from" id="location_from" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="location_to" class="control-label">Location To</label>
+                                    <input type="text" class="form-control rounded-0" name="location_to" id="location_to" required>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="purpose_of_trip" class="control-label">Purpose of Trip</label>
-                                    <input type="text" class="form-control rounded-0" name="purpose_of_trip" id="purpose_of_trip" value="{{ reg_form.data.purpose_of_trip }}" required="required">
+                                    <input type="text" class="form-control rounded-0" name="purpose_of_trip" id="purpose_of_trip" required>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="departure_and_return_date_and_time" class="control-label">Departure & Return Date and Time</label>
-                                    <input type="departure_and_return_date_and_time" class="form-control rounded-0" name="departure_and_return_date_and_time" id="departure_and_return_date_and_time" value="{{ reg_form.data.departure_and_return_date_and_time }}" required="required">
+                                    <label for="departure_date" class="control-label">Departure Date</label>
+                                    <input type="date" class="form-control rounded-0" name="departure_date" id="departure_date" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="return_date" class="control-label">Return Date</label>
+                                    <input type="date" class="form-control rounded-0" name="return_date" id="return_date" required>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="number_of_passengers" class="control-label">Number of Passengers</label>
-                                    <input type="departure_and_return_date_and_time" class="form-control rounded-0" name="number_of_passengers" id="number_of_passengers" value="{{ reg_form.data.number_of_passengers }}" required="required">
+                                    <input type="number" class="form-control rounded-0" name="number_of_passengers" id="number_of_passengers" required>
                                 </div>
-                                {% for field in reg_form %} {% for error in field.errors %}
-                                <div class="alert alert-danger my-2">
-                                    <p>{{ error }}</p>
-                                </div>
-                                {% endfor %} {% endfor %}
                                 <div class="form-group mb-3">
                                     <div class="d-flex w-100 justify-content-end">
-                                        <button class="btn btn-sm rounded-0 btn-primary col-4">
-                                                Submit
-                                            </button>
+                                        <button type="submit" class="btn btn-sm rounded-0 btn-primary col-4">Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -65,4 +72,87 @@
         </div>
     </div>
 </div>
+<!-- New section to display requisition details -->
+<div id="requisition-details" style="display: none;">
+    <h2>Requisition Details</h2>
+    <p>Date: <span id="req-date"></span></p>
+    <p>Requested By: <span id="req-requested_by"></span></p>
+    <p>Faculty: <span id="req-faculty"></span></p>
+    <p>Location From: <span id="req-location_from"></span></p>
+    <p>Location To: <span id="req-location_to"></span></p>
+    <p>Purpose of Trip: <span id="req-purpose_of_trip"></span></p>
+    <p>Departure Date: <span id="req-departure_date"></span></p>
+    <p>Return Date: <span id="req-return_date"></span></p>
+    <p>Number of Passengers: <span id="req-number_of_passengers"></span></p>
+    <!-- Display more requisition details as needed -->
+    <button id="save-requisition" class="btn btn-sm rounded-0 btn-primary">Save</button>
+    <button id="print-requisition" class="btn btn-sm rounded-0 btn-primary" onclick="printRequisitionDetails()">Print</button>
+</div>
+
+<script>
+    // Function to display requisition details when form is submitted
+    document.getElementById('create-requisition').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Collect form data
+        var formData = new FormData(this);
+
+        // Display requisition details
+        document.getElementById('requisition-details').style.display = 'block';
+        document.getElementById('req-date').textContent = formData.get('date');
+        document.getElementById('req-requested_by').textContent = formData.get('requested_by');
+        document.getElementById('req-faculty').textContent = formData.get('faculty');
+        document.getElementById('req-location_from').textContent = formData.get('location_from');
+        document.getElementById('req-location_to').textContent = formData.get('location_to');
+        document.getElementById('req-purpose_of_trip').textContent = formData.get('purpose_of_trip');
+        document.getElementById('req-departure_date').textContent = formData.get('departure_date');
+        document.getElementById('req-return_date').textContent = formData.get('return_date');
+        document.getElementById('req-number_of_passengers').textContent = formData.get('number_of_passengers');
+    });
+
+    // Function to save requisition details as a file
+    document.getElementById('save-requisition').addEventListener('click', function() {
+        // Collect requisition details
+        var date = document.getElementById('req-date').textContent;
+        var requested_by = document.getElementById('req-requested_by').textContent;
+        var faculty = document.getElementById('req-faculty').textContent;
+        var location_from = document.getElementById('req-location_from').textContent;
+        var location_to = document.getElementById('req-location_to').textContent;
+        var purpose_of_trip = document.getElementById('req-purpose_of_trip').textContent;
+        var departure_date = document.getElementById('req-departure_date').textContent;
+        var return_date = document.getElementById('req-return_date').textContent;
+        var number_of_passengers = document.getElementById('req-number_of_passengers').textContent;
+        
+        // Create a text file content with requisition details
+        var fileContent = 'Requisition Details:\n';
+        fileContent += 'Date: ' + date + '\n';
+        fileContent += 'Requested By: ' + requested_by + '\n';
+        fileContent += 'Faculty: ' + faculty + '\n';
+        fileContent += 'Location From: ' + location_from + '\n';
+        fileContent += 'Location To: ' + location_to + '\n';
+        fileContent += 'Purpose of Trip: ' + purpose_of_trip + '\n';
+        fileContent += 'Departure Date: ' + departure_date + '\n';
+        fileContent += 'Return Date: ' + return_date + '\n';
+        fileContent += 'Number of Passengers: ' + number_of_passengers + '\n';
+
+        // Create a Blob with file content
+        var blob = new Blob([fileContent], { type: 'text/plain' });
+
+        // Create a link element to trigger the download
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'requisition_details.txt';
+        a.click();
+    });
+
+    // Function to print requisition details
+    function printRequisitionDetails() {
+        // Hide the button before printing
+        document.getElementById('print-requisition').style.display = 'none';
+        // Print requisition details
+        window.print();
+        // Show the button after printing
+        document.getElementById('print-requisition').style.display = 'block';
+    }
+</script>
 {% endblock pageContent %}

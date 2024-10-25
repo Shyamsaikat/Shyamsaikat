@@ -1,0 +1,14 @@
+<!-- requisition_details.html -->
+{% load static %}
+{% load customfilter %}
+{% extends 'base.html' %}
+{% block content %}
+<h2>Requisition Details</h2>
+<p>Date: {{ date }}</p>
+<p>Requested By: {{ requested_by }}</p>
+<p>Faculty: {{ faculty }}</p>
+<p>Purpose of Trip: {{ purpose_of_trip }}</p>
+<p>Departure Date: {{ departure_date }}</p>
+<p>Return Date: {{ return_date }}</p>
+<p>Number of Passengers: {{ number_of_passengers }}</p>
+{% endblock %}

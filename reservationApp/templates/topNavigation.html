@@ -38,7 +38,7 @@
                         <a class="nav-link" aria-current="page" href="{% url 'scheduled-trips-page' %}">Scheduled Trips</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'requisition-page' %}">Requisition</a>    
+                        <a class="nav-link" aria-current="page" href="{% url 'requisition' %}">Requisition</a>    
                     </li>
                     {% endif %}
                     {% if user.id %}
@@ -57,6 +57,7 @@
                      <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="{% url 'booking-page' %}">Booking</a> 
                     </li>
+                
                     {% endif %}
                 </ul>
 

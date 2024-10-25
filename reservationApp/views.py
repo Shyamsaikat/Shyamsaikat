@@ -514,4 +514,43 @@ def requisition_on(request):
     today = datetime.today().strftime("%Y-%m-%d")
     context['today'] = today
     return render(request, 'requisition-form.html', context)
+# views.py
 
+from django.shortcuts import render
+
+def create_requisition(request):
+    if request.method == 'POST':
+        # Handle form submission
+        date = request.POST.get('date')
+        requested_by = request.POST.get('requested_by')
+        faculty = request.POST.get('faculty')
+        purpose_of_trip = request.POST.get('purpose_of_trip')
+        departure_date = request.POST.get('departure_date')
+        return_date = request.POST.get('return_date')
+        number_of_passengers = request.POST.get('number_of_passengers')
+        
+        # Save requisition details to database or perform any other necessary actions
+        # Example: 
+        # Requisition.objects.create(
+        #     date=date,
+        #     requested_by=requested_by,
+        #     faculty=faculty,
+        #     purpose_of_trip=purpose_of_trip,
+        #     departure_date=departure_date,
+        #     return_date=return_date,
+        #     number_of_passengers=number_of_passengers
+        # )
+
+        # Render a template to display the requisition details
+        return render(request, 'requisition_details.html', {
+            'date': date,
+            'requested_by': requested_by,
+            'faculty': faculty,
+            'purpose_of_trip': purpose_of_trip,
+            'departure_date': departure_date,
+            'return_date': return_date,
+            'number_of_passengers': number_of_passengers,
+        })
+    else:
+        # Render the form template
+        return render(request, 'requisition.html')
